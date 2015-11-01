@@ -1,0 +1,13 @@
+{
+  "name": "slack-contacts",
+  "version": "1.0.0",
+  "description": "A simple contacts exporter from slack",
+  "main": "index.js",
+  "keywords": [
+    "slack",
+    "contacts"
+  ],
+  "author": "Renato Almeida <renato.m.alm@gmail.com>",
+  "private": true,
+  "license": "MIT",
+}
