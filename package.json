@@ -10,4 +10,9 @@
   "author": "Renato Almeida <renato.m.alm@gmail.com>",
   "private": true,
   "license": "MIT",
+  "dependencies": {
+    "request": "^2.64.0",
+    "slack-node": "^0.1.3",
+    "vcards-js": "^2.2.0"
+  }
 }
