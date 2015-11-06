@@ -2,7 +2,7 @@
   "name": "slack-contacts",
   "version": "1.0.0",
   "description": "A simple contacts exporter from slack",
-  "main": "index.js",
+  "main": "main.js",
   "keywords": [
     "slack",
     "contacts"
