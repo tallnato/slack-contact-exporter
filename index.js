@@ -1,35 +1,54 @@
-var config = require('./config.json')
+var yaml_config = require('node-yaml-config');
 var Slack = require('slack-node');
-var vCard = require('vcards-js');
+var vCardJS = require('vcards-js');
 var fs = require('fs');
+var config = yaml_config.load('./config.yml');
+
 
 slack = new Slack(config.slackToken);
-vCard = vCard();
 
-var vFile = config.organization + '.vcf';
+//get the team info
+slack.api("team.info", function(err, response){
+	if(err) throw err;
+	if(!response.ok) throw new Error(response.error);
 
-//Check if file already exists
-if (fs.existsSync(vFile)){
-	fs.unlinkSync(vFile);
-}
+	var organization = response.team.name;
+	var vFile = organization + '.vcf';
 
-slack.api("users.list", function(err, response) {
-	response.members.forEach(function(user) {
 
-		//set properties
-		vCard.firstName = user.profile.first_name;
-		vCard.lastName = user.profile.last_name;
-		vCard.organization = config.organization;
-		vCard.photo.attachFromUrl(user.profile.image_72, 'JPEG');
+	//Check if file already exists
+	if (fs.existsSync(vFile)){
+		fs.unlinkSync(vFile);
+	}
 
-		vCard.cellPhone = user.profile.phone;
-		vCard.title = user.profile.title;
-		vCard.email = user.profile.email;
+	console.log("Getting users for organization '" + organization + "'.");
 
-		vCard.socialUrls['skype'] = user.profile.skype;
+	//Get the team user list
+	slack.api("users.list", function(err, response) {
+		if(err){ throw err; }
+		if(!response.ok) throw new Error(response.error);
 
-		//save vCard
-		fs.appendFile(vFile, vCard.getFormattedString());
+		response.members.forEach(function(user) {
+			var vCard = vCardJS();	
+			//set properties
+			if(user.profile.first_name)
+				vCard.firstName = user.profile.first_name;
+			if(user.profile.last_name)
+				vCard.lastName = user.profile.last_name;
+			vCard.organization = organization;
+			vCard.photo.attachFromUrl(user.profile.image_72, 'JPEG');
+
+			vCard.cellPhone = user.profile.phone;
+			vCard.title = user.profile.title;
+			vCard.workEmail = user.profile.email;
+
+			vCard.socialUrls['skype'] = user.profile.skype;
+
+			//Append vCard to file
+			fs.appendFile(vFile, vCard.getFormattedString());
+		});
+
+		console.log("vCard '" + vFile + "' created.");
 	});
 });
 

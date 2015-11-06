@@ -1,0 +1,2 @@
+default:
+  slackToken :  '-- api token --'
